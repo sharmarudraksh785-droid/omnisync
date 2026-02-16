@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Pro | Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-green: #10b981;
+            --bg-dark: #0a0a0a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg-dark);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Animated Background */
+        .bg-gradient {
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.15) 0%, transparent 50%);
+            animation: gradient-shift 15s ease infinite;
+            z-index: 0;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        .glass {
+            background: rgba(15, 15, 15, 0.75);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+        }
+
+        .input-field {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: var(--primary-green);
+            background: rgba(0, 0, 0, 0.6);
+            outline: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .auth-form {
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .error-message {
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .loading {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+
+    <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
+        <div class="w-full max-w-md">
+            
+            <!-- Logo -->
+            <div class="text-center mb-8">
+                <h1 class="text-5xl font-black tracking-tight mb-2">
+                    NEXUS<span class="text-green-500">.</span>
+                </h1>
+                <p class="text-gray-400 text-sm font-semibold tracking-wider uppercase">Smart Campus Ecosystem</p>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginForm" class="auth-form glass p-8">
+                <h2 class="text-2xl font-bold mb-6">Welcome Back</h2>
+                
+                <div id="loginError" class="hidden error-message bg-red-500/20 border border-red-500/50 text-red-400 p-3 rounded-lg mb-4 text-sm"></div>
+
+                <form onsubmit="handleLogin(event)">
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-gray-400 mb-2">Email</label>
+                        <input 
+                            type="email" 
+                            id="loginEmail" 
+                            class="input-field w-full px-4 py-3 rounded-xl text-sm"
+                            placeholder="your.email@college.edu"
+                            required
+                        />
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-semibold text-gray-400 mb-2">Password</label>
+                        <input 
+                            type="password" 
+                            id="loginPassword" 
+                            class="input-field w-full px-4 py-3 rounded-xl text-sm"
+                            placeholder="••••••••"
+                            required
+                        />
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        id="loginBtn"
+                        class="btn-primary w-full py-4 rounded-xl font-bold text-sm"
+                    >
+                        Sign In
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center">
+                    <p class="text-sm text-gray-400">
+                        Don't have an account? 
+                        <button onclick="showRegister()" class="text-green-500 font-semibold hover:underline">Register</button>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" class="auth-form glass p-8 hidden">
+                <h2 class="text-2xl font-bold mb-6">Create Account</h2>
+                
+                <div id="registerError" class="hidden error-message bg-red-500/20 border border-red-500/50 text-red-400 p-3 rounded-lg mb-4 text-sm"></div>
+
+                <form onsubmit="handleRegister(event)">
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-gray-400 mb-2">Full Name</label>
+                        <input 
+                            type="text" 
+                            id="registerName" 
+                            class="input-field w-full px-4 py-3 rounded-xl text-sm"
+                            placeholder="John Doe"
+                            required
+                        />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-gray-400 mb-2">Email</label>
+                        <input 
+                            type="email" 
+                            id="registerEmail" 
+                            class="input-field w-full px-4 py-3 rounded-xl text-sm"
+                            placeholder="your.email@college.edu"
+                            required
+                        />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-gray-400 mb-2">Student ID</label>
+                        <input 
+                            type="text" 
+                            id="registerStudentId" 
+                            class="input-field w-full px-4 py-3 rounded-xl text-sm"
+                            placeholder="STU123456"
+                            required
+                        />
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">Department</label>
+                            <select 
+                                id="registerDepartment" 
+                                class="input-field w-full px-4 py-3 rounded-xl text-sm"
+                                required
+                            >
+                                <option value="">Select</option>
+                                <option value="Computer Science">Computer Science</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="Business">Business</option>
+                                <option value="Arts">Arts</option>
+                                <option value="Science">Science</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">Year</label>
+                            <select 
+                                id="registerYear" 
+                                class="input-field w-full px-4 py-3 rounded-xl text-sm"
+                                required
+                            >
+                                <option value="">Select</option>
+                                <option value="1">1st Year</option>
+                                <option value="2">2nd Year</option>
+                                <option value="3">3rd Year</option>
+                                <option value="4">4th Year</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-semibold text-gray-400 mb-2">Password</label>
+                        <input 
+                            type="password" 
+                            id="registerPassword" 
+                            class="input-field w-full px-4 py-3 rounded-xl text-sm"
+                            placeholder="••••••••"
+                            required
+                            minlength="6"
+                        />
+                        <p class="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        id="registerBtn"
+                        class="btn-primary w-full py-4 rounded-xl font-bold text-sm"
+                    >
+                        Create Account
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center">
+                    <p class="text-sm text-gray-400">
+                        Already have an account? 
+                        <button onclick="showLogin()" class="text-green-500 font-semibold hover:underline">Sign In</button>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_URL = 'http://localhost:5000/api';
+
+        // Show/Hide Forms
+        function showRegister() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
+
+        function showLogin() {
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
+
+        // Handle Login
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+            const btn = document.getElementById('loginBtn');
+
+            // Clear previous errors
+            errorDiv.classList.add('hidden');
+
+            // Show loading
+            btn.innerHTML = '<i class="fa-solid fa-spinner loading"></i> Signing in...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Login failed');
+                }
+
+                // Store token and user data
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+
+                // Redirect to main app
+                window.location.href = 'index.html';
+
+            } catch (error) {
+                errorDiv.textContent = error.message;
+                errorDiv.classList.remove('hidden');
+                btn.innerHTML = 'Sign In';
+                btn.disabled = false;
+            }
+        }
+
+        // Handle Register
+        async function handleRegister(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const studentId = document.getElementById('registerStudentId').value;
+            const department = document.getElementById('registerDepartment').value;
+            const year = parseInt(document.getElementById('registerYear').value);
+            const password = document.getElementById('registerPassword').value;
+            const errorDiv = document.getElementById('registerError');
+            const btn = document.getElementById('registerBtn');
+
+            // Clear previous errors
+            errorDiv.classList.add('hidden');
+
+            // Show loading
+            btn.innerHTML = '<i class="fa-solid fa-spinner loading"></i> Creating account...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        name, 
+                        email, 
+                        studentId, 
+                        department, 
+                        year, 
+                        password 
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Registration failed');
+                }
+
+                // Store token and user data
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+
+                // Redirect to main app
+                window.location.href = 'index.html';
+
+            } catch (error) {
+                errorDiv.textContent = error.message;
+                errorDiv.classList.remove('hidden');
+                btn.innerHTML = 'Create Account';
+                btn.disabled = false;
+            }
+        }
+
+        // Check if already logged in
+        window.onload = () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                // User is already logged in, redirect to main app
+                window.location.href = 'index.html';
+            }
+        };
+    </script>
+</body>
+</html>
